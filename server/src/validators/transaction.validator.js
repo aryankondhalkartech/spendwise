@@ -13,29 +13,30 @@ const expenseCategories = [
 
 const incomeCategories = ["Salary", "Investment", "Other"];
 
-export const createTransactionSchema = z
-  .object({
-    title: z
-      .string()
-      .trim()
-      .min(2, "Title should be at least 2 characters")
-      .max(100, "Title cannot exceed 100 characters"),
+const transactionSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(2, "Title should be at least 2 characters")
+    .max(100, "Title cannot exceed 100 characters"),
 
-    amount: z.number().positive("Amount must be greater than 0"),
+  amount: z.number().positive("Amount must be greater than 0"),
 
-    type: z.enum(["expense", "income"]),
+  type: z.enum(["expense", "income"]),
 
-    category: z.string(),
+  category: z.string(),
 
-    date: z.coerce.date().optional(),
+  date: z.coerce.date().optional(),
 
-    note: z
-      .string()
-      .trim()
-      .max(1000, "Note cannot exceed 1000 characters")
-      .optional(),
-  })
-  .superRefine((data, ctx) => {
+  note: z
+    .string()
+    .trim()
+    .max(1000, "Note cannot exceed 1000 characters")
+    .optional(),
+});
+
+const validateCategory = (schema) =>
+  schema.superRefine((data, ctx) => {
     if (data.type === "expense" && !expenseCategories.includes(data.category)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -53,4 +54,8 @@ export const createTransactionSchema = z
     }
   });
 
-export const updateTransactionSchema = createTransactionSchema.partial();
+export const createTransactionSchema = validateCategory(transactionSchema);
+
+export const updateTransactionSchema = validateCategory(
+  transactionSchema.partial(),
+);
