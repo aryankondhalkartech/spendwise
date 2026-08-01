@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
+import transactionRouter from "./routes/transaction.routes.js";
+import auth from "./middlewares/auth.middleware.js";
 
 const app = express();
 const limiter = rateLimit({
@@ -28,6 +30,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
 app.use("/api/auth", authRouter);
+app.use(auth);
 app.use("/api/users", userRouter);
+app.use("/api/transactions", transactionRouter);
 
 export default app;
