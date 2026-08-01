@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.patch(
   "/preferences",
-  validateRequest(updateCurrencyPreference),
+  validateRequest(updateCurrencyPreferenceSchema),
   updateCurrencyPreference,
 );
 
