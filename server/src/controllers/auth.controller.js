@@ -102,3 +102,34 @@ export const logout = async (req, res) => {
     });
   }
 };
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const existingUser = await User.findById(req.user).select("-password");
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+        currency: existingUser.currency,
+        isOnboarded: existingUser.isOnboarded,
+      },
+    });
+  } catch (error) {
+    console.error(error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
